@@ -14,8 +14,13 @@ $signature = $_SERVER["HTTP_" . \LINE\LINEBot\Constant\HTTPHeader::LINE_SIGNATUR
 
 $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
 
+/** @var  $event \LINE\LINEBot\Event\MessageEvent */
 foreach ($events as $event) {
     $response = $bot->replyMessage(
-        $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('HELLO')
+        $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('OK!!')
     );
+
+    if ($event->getMessageType() === \LINE\LINEBot\Constant\MessageType::TEXT) {
+        // todo: slack message
+    }
 }
