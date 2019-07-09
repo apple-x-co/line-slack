@@ -20,7 +20,16 @@ foreach ($events as $event) {
         $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('OK!!')
     );
 
-    if ($event->getMessageType() === \LINE\LINEBot\Constant\MessageType::TEXT) {
-        // todo: slack message
+    if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
+        $slackBlock = new \Slack\SlackBlock();
+        $slackBlock
+            ->addBlock(
+                \Slack\SlackBlock\Section::text('plain_text', $event->getText())
+            );
+
+        $slack = new \Slack\Slack(
+            getenv('SLACK_WEBHOOK_URL')
+        );
+        $slack->send($slackBlock);
     }
 }
