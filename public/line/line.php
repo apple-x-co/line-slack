@@ -21,15 +21,24 @@ foreach ($events as $event) {
     );
 
     if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
-        $slackBlock = new \Slack\SlackBlock();
-        $slackBlock
-            ->addBlock(
-                \Slack\SlackBlock\Section::text('plain_text', $event->getText())
-            );
+//        $slackBlock = new \Slack\SlackBlock();
+//        $slackBlock
+//            ->addBlock(
+//                \Slack\SlackBlock\Section::text('plain_text', $event->getText())
+//            );
+//        $slack = new \Slack\Slack(
+//            getenv('SLACK_WEBHOOK_URL')
+//        );
+//        $slack->send($slackBlock);
+
+        $slackText = new \Slack\SlackText($event->getText());
 
         $slack = new \Slack\Slack(
-            getenv('SLACK_WEBHOOK_URL')
+            'https://slack.com/api/chat.postMessage',
+            getenv('SLACK_CHANNEL'),
+            null,
+            getenv('SLACK_BOT_OAUTH_TOKEN')
         );
-        $slack->send($slackBlock);
+        $slack->post($slackText);
     }
 }
