@@ -111,6 +111,12 @@ function sendLineMessage($result, $argv)
         $ts = $postResult->get('ts');
         write_cache($line_cache_file_path, ['ts' => $ts]);
     }
+
+    $slack_cache_file_path = get_cache_file_path($postResult->get('ts'));
+    $slack_cache = get_cache($slack_cache_file_path);
+    if ($slack_cache === null) {
+        write_cache($slack_cache_file_path, ['line_id' => $line_id]);
+    }
 }
 
 function get_cache_file_path($file_name)
