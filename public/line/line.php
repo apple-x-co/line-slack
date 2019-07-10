@@ -17,27 +17,44 @@ $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
 /** @var  $event \LINE\LINEBot\Event\MessageEvent */
 foreach ($events as $event) {
     if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
-        $contact_text = $event->getText();
+        $profile = [];
+        $line_id = $event->getEventSourceId();
+        $response = $bot->getProfile($line_id);
+        if ($response->isSucceeded()) {
+            $profile = $response->getJSONDecodedBody();
+        }
+
+        $texts = [
+            'LINE ' . (isset($profile['displayName']) ? $profile['displayName'] : '') . '（ `' . $line_id . '` ）さんからの問い合わせです。',
+            isset($profile['pictureUrl']) ? $profile['pictureUrl'] : '',
+            '',
+            $event->getText(),
+            '',
+        ];
 
         $chatPostMessage = new \Slack\ChatPostMessage(
             getenv('SLACK_CHANNEL'),
             getenv('SLACK_BOT_OAUTH_TOKEN')
         );
         $postResult = $chatPostMessage->post(
-            new \Slack\MessageBuilder\MessageText($contact_text)
+            new \Slack\MessageBuilder\MessageText(implode("\n", $texts))
         );
         if ( ! $postResult->isOk()) {
             error_log($postResult->error());
         }
 
         if ($postResult->isOk()) {
+            $texts[] = '```';
+            $texts[] = 'system informations';
+            $texts[] = 'ts:' . $postResult->get('ts');
+            $texts[] = '```';
             $chatUpdate = new \Slack\ChatUpdate(
                 $postResult->get('channel'),
                 getenv('SLACK_BOT_OAUTH_TOKEN')
             );
             $postResult = $chatUpdate->post(
                 $postResult->get('ts'),
-                new \Slack\MessageBuilder\MessageText($contact_text . "\n\n```ts:" . $postResult->get('ts') . '```')
+                new \Slack\MessageBuilder\MessageText(implode("\n", $texts))
             );
             if ( ! $postResult->isOk()) {
                 error_log($postResult->error());
