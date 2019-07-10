@@ -6,10 +6,12 @@
  * Time: 10:45
  */
 
-namespace Slack\SlackBlock;
+namespace Slack\MessageBuilder\Block;
 
 
-class SectionField implements \Slack\SlackBlockInterface
+use Slack\MessageBuilder\MessageBuilderInterface;
+
+class SectionField implements MessageBuilderInterface
 {
     /** @var string */
     private $type;

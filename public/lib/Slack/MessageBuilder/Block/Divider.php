@@ -6,10 +6,12 @@
  * Time: 10:43
  */
 
-namespace Slack\SlackBlock;
+namespace Slack\MessageBuilder\Block;
 
 
-class Divider implements \Slack\SlackBlockInterface
+use Slack\MessageBuilder\MessageBuilderInterface;
+
+class Divider implements MessageBuilderInterface
 {
 
     /**

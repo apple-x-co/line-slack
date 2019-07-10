@@ -6,10 +6,12 @@
  * Time: 10:45
  */
 
-namespace Slack\SlackBlock;
+namespace Slack\MessageBuilder\Block;
 
 
-class ContextElement implements \Slack\SlackBlockInterface
+use Slack\MessageBuilder\MessageBuilderInterface;
+
+class ContextElement implements MessageBuilderInterface
 {
     /** @var string */
     private $type;

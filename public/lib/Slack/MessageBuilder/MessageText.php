@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Slack;
+namespace Slack\MessageBuilder;
 
 
-class SlackText
+class MessageText implements MessageBuilderInterface
 {
     /** @var string */
     private $text;
@@ -22,7 +22,7 @@ class SlackText
     /**
      * @return string
      */
-    public function getText()
+    public function build()
     {
         return $this->text;
     }

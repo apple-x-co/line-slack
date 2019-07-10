@@ -1,14 +1,16 @@
 <?php
 
-namespace Slack;
+namespace Slack\MessageBuilder;
 
 
-class SlackBlock implements SlackBlockInterface
+use Slack\MessageBuilder\Block\BlockInterface;
+
+class MessageBlock implements BlockInterface, MessageBuilderInterface
 {
     private $blocks = [];
 
     /**
-     * @param SlackBlockInterface $block
+     * @param BlockInterface $block
      *
      * @return $this
      */
