@@ -20,8 +20,9 @@ if ($result->getToken() !== getenv('SLACK_VERIFICATION_TOKEN')) {
 $command = new \Slack\Command($result->getText());
 
 $action_map = [
-    'profile' => 'getLineProfile',
-    'message' => 'sendLineMessage'
+    'statistics' => 'getLineStatistics',
+    'profile'    => 'getLineProfile',
+    'message'    => 'sendLineMessage'
 ];
 
 if ( ! array_key_exists($command->getAction(), $action_map)) {
@@ -37,6 +38,62 @@ if ( ! function_exists($function)) {
 
 $function($result, $command->getArguments());
 echo 'command accepted.';
+
+/**
+ * @param \Slack\CommandResult $result
+ * @param array $argv
+ */
+function getLineStatistics($result, $argv)
+{
+    $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(getenv('LINE_ACCESS_TOKEN'));
+    $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => getenv('LINE_CHANNEL_SECRET')]);
+
+    $date = new \DateTime();
+
+    $numberOfSentThisMonth = $bot->getNumberOfSentThisMonth()->getJSONDecodedBody();
+    $numberOfLimitForAdditional = $bot->getNumberOfLimitForAdditional()->getJSONDecodedBody();
+    $numberOfSentBroadcastMessages = $bot->getNumberOfSentBroadcastMessages($date)->getJSONDecodedBody();
+    $numberOfSentMulticastMessages = $bot->getNumberOfSentMulticastMessages($date)->getJSONDecodedBody();
+    $numberOfSentPushMessages = $bot->getNumberOfSentPushMessages($date)->getJSONDecodedBody();
+    $numberOfSentReplyMessages = $bot->getNumberOfSentReplyMessages($date)->getJSONDecodedBody();
+
+    $texts = [
+        'LINE Statistics',
+        '',
+        '*Get number of messages sent this month*',
+        'totalUsage: `' . $numberOfSentThisMonth['totalUsage'] . '`',
+        '',
+        '*Get the target limit for additional messages*',
+        'type: `' . $numberOfLimitForAdditional['type'] . '`',
+        'value: `' . (isset($numberOfLimitForAdditional['value']) ? $numberOfLimitForAdditional['value'] : '') . '`',
+        '',
+        '*Get number of sent broadcast messages*',
+        'status: `' . $numberOfSentBroadcastMessages['status'] . '`',
+        'success: `' . (isset($numberOfSentBroadcastMessages['success']) ? $numberOfSentBroadcastMessages['success'] : '-') . '`',
+        '',
+        '*Get number of sent multicast messages*',
+        'status: `' . $numberOfSentMulticastMessages['status'] . '`',
+        'success: `' . (isset($numberOfSentMulticastMessages['success']) ? $numberOfSentMulticastMessages['success'] : '-') . '`',
+        '',
+        '*Get number of sent push messages*',
+        'status: `' . $numberOfSentPushMessages['status'] . '`',
+        'success: `' . (isset($numberOfSentPushMessages['success']) ? $numberOfSentPushMessages['success'] : '-') . '`',
+        '',
+        '*Get number of sent reply messages*',
+        'status: `' . $numberOfSentReplyMessages['status'] . '`',
+        'success: `' . (isset($numberOfSentReplyMessages['success']) ? $numberOfSentReplyMessages['success'] : '-') . '`',
+    ];
+
+    $chatPostMessage = new \Slack\ChatPostMessage(
+        getenv('SLACK_CHANNEL'),
+        getenv('SLACK_BOT_OAUTH_TOKEN'),
+        true,
+        $result->getResponseUrl()
+    );
+    $postResult = $chatPostMessage->post(
+        new \Slack\MessageBuilder\MessageText(implode("\n", $texts))
+    );
+}
 
 /**
  * @param \Slack\CommandResult $result
