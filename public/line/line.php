@@ -26,10 +26,10 @@ foreach ($events as $event) {
 
         $parent_ts = null;
 
-        $cache_file_path = get_cache_file_path($line_id);
-        $cache = get_cache($cache_file_path);
-        if ($cache !== null) {
-            $parent_ts = $cache['ts'];
+        $line_cache_file_path = get_cache_file_path($line_id);
+        $line_cache = get_cache($line_cache_file_path);
+        if ($line_cache !== null) {
+            $parent_ts = $line_cache['ts'];
         }
 
         $texts = [
@@ -46,15 +46,22 @@ foreach ($events as $event) {
         );
         $postResult = $chatPostMessage->post(
             new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
-            isset($cache['ts']) ? $cache['ts'] : null
+            isset($line_cache['ts']) ? $line_cache['ts'] : null
         );
         if ( ! $postResult->isOk()) {
             error_log($postResult->error());
             continue;
         }
 
-        if ($cache === null) {
-            write_cache($cache_file_path, ['ts' => $postResult->get('ts')]);
+        if ($line_cache === null) {
+            $ts = $postResult->get('ts');
+            write_cache($line_cache_file_path, ['ts' => $ts]);
+        }
+
+        $slack_cache_file_path = get_cache_file_path($ts);
+        $slack_cache = get_cache($slack_cache_file_path);
+        if ($slack_cache === null) {
+            write_cache($slack_cache_file_path, ['line_id' => $line_id]);
         }
 
         if ($postResult->isOk()) {
@@ -86,9 +93,9 @@ foreach ($events as $event) {
     );
 }
 
-function get_cache_file_path($line_id)
+function get_cache_file_path($file_name)
 {
-    return __DIR__ . '/../../data/cache/' . $line_id;
+    return __DIR__ . '/../../data/cache/' . $file_name;
 }
 
 function get_cache($file_path)
