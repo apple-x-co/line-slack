@@ -20,4 +20,8 @@ if ($result->getToken() !== getenv('SLACK_VERIFICATION_TOKEN')) {
 error_log($result->getCommand());
 error_log($result->getText());
 
+$command = new \Slack\Command($result->getText());
+error_log($command->getAction());
+error_log(print_r($command->getArguments(), true));
+
 echo 'command accepted.';
