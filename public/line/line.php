@@ -16,6 +16,19 @@ $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
 
 /** @var  $event \LINE\LINEBot\Event\MessageEvent */
 foreach ($events as $event) {
+    if ($event instanceof \LINE\LINEBot\Event\LeaveEvent ||
+        $event instanceof \LINE\LINEBot\Event\UnfollowEvent) {
+        // todo: remove cache
+        continue;
+    }
+    if ($event instanceof \LINE\LINEBot\Event\JoinEvent ||
+        $event instanceof \LINE\LINEBot\Event\FollowEvent) {
+        $response = $bot->replyMessage(
+            $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('Hi!!')
+        );
+        continue;
+    }
+
     if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
         $profile = [];
         $line_id = $event->getEventSourceId();
@@ -84,13 +97,12 @@ foreach ($events as $event) {
             $response = $bot->replyMessage(
                 $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('OK!!')
             );
-            continue;
         }
+    } else {
+        $response = $bot->replyMessage(
+            $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('???')
+        );
     }
-
-    $response = $bot->replyMessage(
-        $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('???')
-    );
 }
 
 function get_cache_file_path($file_name)

@@ -45,7 +45,7 @@ if ($result->getEventType() === 'app_mention') {
         return;
     }
 
-    $reply_text = $result->getEventText();
+    $reply_text = $result->getEventTextWithoutMention();
     $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(getenv('LINE_ACCESS_TOKEN'));
     $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => getenv('LINE_CHANNEL_SECRET')]);
 

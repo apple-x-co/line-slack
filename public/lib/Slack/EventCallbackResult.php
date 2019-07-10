@@ -101,4 +101,26 @@ class EventCallbackResult
 
         return isset($event['text']) ? $event['text'] : null;
     }
+
+    /**
+     * @return string|null
+     *
+     * ex: TEST Reply
+     */
+    public function getEventTextWithoutMention()
+    {
+        $text = $this->getEventText();
+        if ($text === null) {
+            return null;
+        }
+
+        $match = null;
+        preg_match('/\A\<\@\w+?\> (.+)/', $text, $match);
+        if (is_array($match)) {
+            return $match[1];
+        }
+
+        return null;
+    }
+
 }
