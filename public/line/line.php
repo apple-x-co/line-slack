@@ -17,15 +17,32 @@ $events = $bot->parseEventRequest(file_get_contents('php://input'), $signature);
 /** @var  $event \LINE\LINEBot\Event\MessageEvent */
 foreach ($events as $event) {
     if ($event instanceof \LINE\LINEBot\Event\MessageEvent\TextMessage) {
-        $slack = new \Slack\ChatPostMessage(
+        $contact_text = $event->getText();
+
+        $chatPostMessage = new \Slack\ChatPostMessage(
             getenv('SLACK_CHANNEL'),
             getenv('SLACK_BOT_OAUTH_TOKEN')
         );
-        $postResult = $slack->post(
-            new \Slack\MessageBuilder\MessageText($event->getText())
+        $postResult = $chatPostMessage->post(
+            new \Slack\MessageBuilder\MessageText($contact_text)
         );
+        if ( ! $postResult->isOk()) {
+            error_log($postResult->error());
+        }
 
         if ($postResult->isOk()) {
+            $chatUpdate = new \Slack\ChatUpdate(
+                $postResult->get('channel'),
+                getenv('SLACK_BOT_OAUTH_TOKEN')
+            );
+            $postResult = $chatUpdate->post(
+                $postResult->get('ts'),
+                new \Slack\MessageBuilder\MessageText($contact_text . "\n\n```ts:" . $postResult->get('ts') . '```')
+            );
+            if ( ! $postResult->isOk()) {
+                error_log($postResult->error());
+            }
+
             $response = $bot->replyMessage(
                 $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('OK!!')
             );
