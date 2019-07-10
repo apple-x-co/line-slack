@@ -24,9 +24,17 @@ foreach ($events as $event) {
             $profile = $response->getJSONDecodedBody();
         }
 
+        $parent_ts = null;
+
+        $cache_file_path = get_cache_file_path($line_id);
+        $cache = get_cache($cache_file_path);
+        if ($cache !== null) {
+            $parent_ts = $cache['ts'];
+        }
+
         $texts = [
-            'LINE ' . (isset($profile['displayName']) ? $profile['displayName'] : '') . '（ `' . $line_id . '` ）さんからの問い合わせです。',
-            isset($profile['pictureUrl']) ? $profile['pictureUrl'] : '',
+            'LINEより ' . (isset($profile['displayName']) ? $profile['displayName'] : '') . '（ `' . $line_id . '` ）さんからの問い合わせです。',
+            //isset($profile['pictureUrl']) ? $profile['pictureUrl'] : '',
             '',
             $event->getText(),
             '',
@@ -37,10 +45,16 @@ foreach ($events as $event) {
             getenv('SLACK_BOT_OAUTH_TOKEN')
         );
         $postResult = $chatPostMessage->post(
-            new \Slack\MessageBuilder\MessageText(implode("\n", $texts))
+            new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
+            isset($cache['ts']) ? $cache['ts'] : null
         );
         if ( ! $postResult->isOk()) {
             error_log($postResult->error());
+            continue;
+        }
+
+        if ($cache === null) {
+            write_cache($cache_file_path, ['ts' => $postResult->get('ts')]);
         }
 
         if ($postResult->isOk()) {
@@ -70,4 +84,25 @@ foreach ($events as $event) {
     $response = $bot->replyMessage(
         $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('???')
     );
+}
+
+function get_cache_file_path($line_id)
+{
+    return __DIR__ . '/../../data/cache/' . $line_id;
+}
+
+function get_cache($file_path)
+{
+    if ( ! file_exists($file_path)) {
+        return null;
+    }
+
+    $string = file_get_contents($file_path);
+
+    return json_decode($string, true);
+}
+
+function write_cache($file_path, $data)
+{
+    file_put_contents($file_path, json_encode($data));
 }

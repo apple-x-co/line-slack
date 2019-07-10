@@ -82,22 +82,25 @@ class ChatPostMessage
 
     /**
      * @param array|MessageBlock|MessageText $data
+     * @param string $thread_ts
      *
      * @return PostResult
      */
-    public function post($data)
+    public function post($data, $thread_ts = null)
     {
         if ($data instanceof MessageBlock) {
             $data = [
-                'channel' => $this->channel,
-                'as_user' => $this->as_user,
-                'blocks'  => $data->build()
+                'channel'   => $this->channel,
+                'as_user'   => $this->as_user,
+                'blocks'    => $data->build(),
+                'thread_ts' => $thread_ts
             ];
         } else if ($data instanceof MessageText) {
             $data = [
-                'channel' => $this->channel,
-                'text'    => $data->build(),
-                'as_user' => $this->as_user
+                'channel'   => $this->channel,
+                'text'      => $data->build(),
+                'as_user'   => $this->as_user,
+                'thread_ts' => $thread_ts
             ];
         }
 
