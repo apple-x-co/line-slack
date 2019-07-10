@@ -16,6 +16,20 @@ class PostResult
      */
     public function __construct($text)
     {
+        // {
+        // 	"ok": true,
+        // 	"channel": "CKX1SB24A",
+        // 	"ts": "1562663195.002800",
+        // 	"message": {
+        // 		"type": "message",
+        // 		"subtype": "bot_message",
+        // 		"text": "Test",
+        // 		"ts": "1562663195.002800",
+        // 		"username": "line slack",
+        // 		"bot_id": "BL8E942LQ"
+        // 	}
+        // }
+
         $this->data = @json_decode($text, true);
     }
 

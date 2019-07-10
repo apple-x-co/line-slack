@@ -11,6 +11,12 @@ $body = file_get_contents('php://input');
 
 $result = new \Slack\EventCallbackResult($body);
 
+if ($result->getToken() !== getenv('SLACK_VERIFICATION_TOKEN')) {
+    error_log('token error');
+    error_log($result->getToken());
+    exit(1);
+}
+
 if ($result->getEventType() === 'app_mention') {
     $thread_ts = $result->getEventThreadTS();
     if ($thread_ts === null || $thread_ts === '') {

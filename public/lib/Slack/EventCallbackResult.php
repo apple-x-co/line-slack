@@ -10,13 +10,45 @@ class EventCallbackResult
     public $data;
 
     /**
-     * Event constructor.
+     * EventCallbackResult constructor.
      *
      * @param string $text
      */
     public function __construct($text)
     {
+        // {
+        // 	"token": "vDhLPAaHITeq1GFnRZeJHoPz",
+        // 	"team_id": "T0454LWHB",
+        // 	"api_app_id": "ALAHMAZ1C",
+        // 	"event": {
+        // 		"client_msg_id": "67382bcd-ac02-4c40-b08d-6d0499c252e4",
+        // 		"type": "app_mention",
+        // 		"text": "<@UKX2KDL91> TEST Reply",
+        // 		"user": "U3Q2NNAUF",
+        // 		"ts": "1562728945.004300",
+        // 		"team": "T0454LWHB",
+        // 		"thread_ts": "1562728864.003600",
+        // 		"parent_user_id": "UKX2KDL91",
+        // 		"channel": "CKX1SB24A",
+        // 		"event_ts": "1562728945.004300"
+        // 	},
+        // 	"type": "event_callback",
+        // 	"event_id": "EvL39RS20H",
+        // 	"event_time": 1562728945,
+        // 	"authed_users": [
+        // 		"UKX2KDL91"
+        // 	]
+        // }
+
         $this->data = @json_decode($text, true);
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getToken()
+    {
+        return isset($this->data['token']) ? $this->data['token'] : null;
     }
 
     /**
