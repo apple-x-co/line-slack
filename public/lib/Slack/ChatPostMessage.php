@@ -5,6 +5,7 @@ namespace Slack;
 
 
 use Slack\MessageBuilder\MessageBlock;
+use Slack\MessageBuilder\MessageBuilderInterface;
 use Slack\MessageBuilder\MessageText;
 
 class ChatPostMessage
@@ -81,7 +82,7 @@ class ChatPostMessage
     }
 
     /**
-     * @param array|MessageBlock|MessageText $data
+     * @param array|MessageBuilderInterface $data
      * @param string $thread_ts
      *
      * @return PostResult

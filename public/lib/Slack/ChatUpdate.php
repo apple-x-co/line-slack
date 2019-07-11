@@ -5,6 +5,7 @@ namespace Slack;
 
 
 use Slack\MessageBuilder\MessageBlock;
+use Slack\MessageBuilder\MessageBuilderInterface;
 use Slack\MessageBuilder\MessageText;
 
 class ChatUpdate
@@ -68,7 +69,7 @@ class ChatUpdate
 
     /**
      * @param string $ts
-     * @param array|MessageBlock|MessageText $data
+     * @param array|MessageBuilderInterface $data
      *
      * @return PostResult
      */
