@@ -29,6 +29,6 @@ class MessageBlock implements  MessageBuilderInterface
             $array[] = $block->build();
         }
 
-        return ['block' => $array];
+        return ['blocks' => $array];
     }
 }

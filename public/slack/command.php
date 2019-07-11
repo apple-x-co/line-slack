@@ -112,10 +112,11 @@ function getLineProfile($result, $argv)
     }
 
     $profile = $response->getJSONDecodedBody();
-    $texts = [
-        'displayName: `' . $profile['displayName'] . '`',
-        'pictureUrl: `' . $profile['pictureUrl'] . '`'
-    ];
+
+    $messageBuilder = new \Slack\MessageBuilder\MessageMultiple();
+    $messageBuilder->addMessageBuilder(
+        new \Slack\MessageBuilder\MessageText('displayName: `' . $profile['displayName'] . '`')
+    );
 
     $chatPostMessage = new \Slack\ChatPostMessage(
         getenv('SLACK_CHANNEL'),
@@ -124,9 +125,29 @@ function getLineProfile($result, $argv)
         $result->getResponseUrl()
     );
     $postResult = $chatPostMessage->post(
-        new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
+        (new \Slack\MessageBuilder\MessageMultiple())
+            ->addMessageBuilder(
+                new \Slack\MessageBuilder\MessageText('displayName: `' . $profile['displayName'] . '`')
+            )
+            ->addMessageBuilder(
+                (new \Slack\MessageBuilder\MessageBlock())
+                    ->addBlock(
+                        (\Slack\MessageBuilder\Block\Section::text('mrkdwn', implode("\n", [
+                            '*LINE Profile*',
+                            'id: `' . $line_id . '`',
+                            'name: `' . $profile['displayName'] . '`',
+                        ])))
+                            ->setAccessory(
+                                new \Slack\MessageBuilder\Accessory\Image($profile['pictureUrl'], $line_id)
+                            )
+                    )
+            ),
         new \Slack\ChatOptions()
     );
+
+    if ( ! $postResult->isOk()) {
+        error_log($postResult->error());
+    }
 }
 
 /**

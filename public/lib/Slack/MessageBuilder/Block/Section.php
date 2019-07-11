@@ -9,6 +9,7 @@
 namespace Slack\MessageBuilder\Block;
 
 
+use Slack\MessageBuilder\AccessoryInterface;
 use Slack\MessageBuilder\MessageBuilderInterface;
 
 class Section implements MessageBuilderInterface
@@ -21,6 +22,9 @@ class Section implements MessageBuilderInterface
 
     /** @var string */
     private $text = null;
+
+    /** @var AccessoryInterface */
+    private $accessory = null;
 
     /** @var SectionField[] */
     private $fields = [];
@@ -70,18 +74,36 @@ class Section implements MessageBuilderInterface
     }
 
     /**
+     * @param AccessoryInterface $accessory
+     *
+     * @return $this
+     */
+    public function setAccessory($accessory)
+    {
+        $this->accessory = $accessory;
+
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function build()
     {
         if ($this->section_type === 'text') {
-            return [
+            $array = [
                 'type' => 'section',
                 'text' => [
                     'type' => $this->type,
                     'text' => $this->text
                 ]
             ];
+
+            if ($this->accessory !== null) {
+                $array = array_merge($array, ['accessory' => $this->accessory->build()]);
+            }
+
+            return $array;
         }
 
         if ($this->section_type === 'fields') {

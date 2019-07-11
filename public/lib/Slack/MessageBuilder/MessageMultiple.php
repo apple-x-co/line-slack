@@ -16,10 +16,14 @@ class MessageMultiple implements MessageBuilderInterface
 
     /**
      * @param MessageBuilderInterface $messageBuilder
+     *
+     * @return $this
      */
     public function addMessageBuilder($messageBuilder)
     {
         $this->messageBuilders[] = $messageBuilder;
+
+        return $this;
     }
 
     /**
@@ -30,7 +34,7 @@ class MessageMultiple implements MessageBuilderInterface
         $messages = [];
 
         foreach ($this->messageBuilders as $messageBuilder) {
-            $messages[] += $messageBuilder->build();
+            $messages += $messageBuilder->build();
         }
 
         return $messages;
