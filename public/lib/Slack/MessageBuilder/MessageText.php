@@ -20,10 +20,10 @@ class MessageText implements MessageBuilderInterface
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function build()
     {
-        return $this->text;
+        return ['text' => $this->text];
     }
 }

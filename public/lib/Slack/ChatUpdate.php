@@ -75,20 +75,13 @@ class ChatUpdate
      */
     public function post($ts, $data)
     {
-        if ($data instanceof MessageBlock) {
-            $data = [
+        if ($data instanceof MessageBuilderInterface) {
+            $array = [
                 'channel' => $this->channel,
-                'ts'      => $ts,
                 'as_user' => $this->as_user,
-                'blocks'  => $data->build()
-            ];
-        } else if ($data instanceof MessageText) {
-            $data = [
-                'channel' => $this->channel,
                 'ts'      => $ts,
-                'text'    => $data->build(),
-                'as_user' => $this->as_user
             ];
+            return $this->_post(array_merge($array, $data->build()));
         }
 
         return $this->_post($data);

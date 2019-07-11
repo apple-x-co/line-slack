@@ -7,7 +7,7 @@ namespace Slack\MessageBuilder;
 interface MessageBuilderInterface
 {
     /**
-     * @return mixed
+     * @return array
      */
     public function build();
 }

@@ -89,20 +89,13 @@ class ChatPostMessage
      */
     public function post($data, $thread_ts = null)
     {
-        if ($data instanceof MessageBlock) {
-            $data = [
+        if ($data instanceof MessageBuilderInterface) {
+            $array = [
                 'channel'   => $this->channel,
-                'as_user'   => $this->as_user,
-                'blocks'    => $data->build(),
-                'thread_ts' => $thread_ts
-            ];
-        } else if ($data instanceof MessageText) {
-            $data = [
-                'channel'   => $this->channel,
-                'text'      => $data->build(),
                 'as_user'   => $this->as_user,
                 'thread_ts' => $thread_ts
             ];
+            return $this->_post(array_merge($array, $data->build()));
         }
 
         return $this->_post($data);
