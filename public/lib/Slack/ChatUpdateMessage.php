@@ -6,7 +6,7 @@ namespace Slack;
 
 use Slack\MessageBuilder\MessageBuilderInterface;
 
-class ChatPostMessage extends AbstractChatMessage
+class ChatUpdateMessage extends AbstractChatMessage
 {
     /** @var string */
     private $url = null;
@@ -28,28 +28,13 @@ class ChatPostMessage extends AbstractChatMessage
      * @param boolean $as_user
      * @param string $url
      */
-    public function __construct($channel, $token, $as_user = true, $url = 'https://slack.com/api/chat.postMessage')
+    public function __construct($channel, $token, $as_user = true, $url = 'https://slack.com/api/chat.update')
     {
         $this->channel = $channel;
         $this->token   = $token;
         $this->as_user = $as_user;
         $this->url     = $url;
     }
-
-//        // 「ts」がメッセージID
-//    {
-//        "ok": true,
-//        "channel": "CKX1SB24A",
-//        "ts": "1562663195.002800",
-//        "message": {
-//            "type": "message",
-//            "subtype": "bot_message",
-//            "text": "Test",
-//            "ts": "1562663195.002800",
-//            "username": "line slack",
-//            "bot_id": "BL8E942LQ"
-//        }
-//    }
 
     /**
      * @param array|MessageBuilderInterface $data
@@ -61,12 +46,10 @@ class ChatPostMessage extends AbstractChatMessage
     {
         if ($data instanceof MessageBuilderInterface) {
             $array = [
-                'channel'   => $this->channel,
-                'as_user'   => $this->as_user
+                'channel' => $this->channel,
+                'as_user' => $this->as_user,
+                'ts'      => $options->get('ts'),
             ];
-            if ($options->get('thread_ts') !== null) {
-                $array = array_merge($array, ['thread_ts' => $options->get('thread_ts')]);
-            }
             return $this->_post(
                 $this->url,
                 array_merge($array, $data->build()),

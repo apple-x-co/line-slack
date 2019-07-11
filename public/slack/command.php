@@ -91,7 +91,8 @@ function getLineStatistics($result, $argv)
         $result->getResponseUrl()
     );
     $postResult = $chatPostMessage->post(
-        new \Slack\MessageBuilder\MessageText(implode("\n", $texts))
+        new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
+        new \Slack\ChatOptions()
     );
 }
 
@@ -123,7 +124,8 @@ function getLineProfile($result, $argv)
         $result->getResponseUrl()
     );
     $postResult = $chatPostMessage->post(
-        new \Slack\MessageBuilder\MessageText(implode("\n", $texts))
+        new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
+        new \Slack\ChatOptions()
     );
 }
 
@@ -162,7 +164,8 @@ function sendLineMessage($result, $argv)
         getenv('SLACK_BOT_OAUTH_TOKEN')
     );
     $postResult = $chatPostMessage->post(
-        new \Slack\MessageBuilder\MessageText(implode("\n", $texts))
+        new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
+        new \Slack\ChatOptions()
     );
 
     $line_cache_file_path = get_cache_file_path($line_id);

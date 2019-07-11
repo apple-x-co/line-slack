@@ -26,7 +26,7 @@ if ($result->getEventType() === 'app_mention') {
         );
         $postResult = $chatPostMessage->post(
             new \Slack\MessageBuilder\MessageText('Sorry!! not thread.'),
-            $result->getEventTS()
+            new \Slack\ChatOptions(['thread_ts' => $result->getEventTS()])
         );
         if ( ! $postResult->isOk()) {
             error_log($postResult->error());
@@ -43,7 +43,7 @@ if ($result->getEventType() === 'app_mention') {
         );
         $postResult = $chatPostMessage->post(
             new \Slack\MessageBuilder\MessageText('Sorry!! Cannot find line user.'),
-            $thread_ts
+            new \Slack\ChatOptions(['thread_ts' => $thread_ts])
         );
         if ( ! $postResult->isOk()) {
             error_log($postResult->error());

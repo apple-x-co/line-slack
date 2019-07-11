@@ -60,15 +60,16 @@ foreach ($events as $event) {
         );
         $postResult = $chatPostMessage->post(
             new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
-            isset($line_cache['ts']) ? $line_cache['ts'] : null
+            new \Slack\ChatOptions(['thread_ts' => $parent_ts])
         );
         if ( ! $postResult->isOk()) {
             error_log($postResult->error());
             continue;
         }
 
-        if ($line_cache === null) {
-            $ts = $postResult->get('ts');
+        $ts = $postResult->get('ts');
+
+        if ($parent_ts === null) {
             write_cache($line_cache_file_path, ['ts' => $ts]);
         }
 
@@ -81,15 +82,15 @@ foreach ($events as $event) {
         if ($postResult->isOk()) {
             $texts[] = '```';
             $texts[] = 'system informations';
-            $texts[] = 'ts:' . $postResult->get('ts');
+            $texts[] = 'ts:' . $ts;
             $texts[] = '```';
-            $chatUpdate = new \Slack\ChatUpdate(
+            $chatUpdateMessage = new \Slack\ChatUpdateMessage(
                 $postResult->get('channel'),
                 getenv('SLACK_BOT_OAUTH_TOKEN')
             );
-            $postResult = $chatUpdate->post(
-                $postResult->get('ts'),
-                new \Slack\MessageBuilder\MessageText(implode("\n", $texts))
+            $postResult = $chatUpdateMessage->post(
+                new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
+                new \Slack\ChatOptions(['ts' => $ts])
             );
             if ( ! $postResult->isOk()) {
                 error_log($postResult->error());
