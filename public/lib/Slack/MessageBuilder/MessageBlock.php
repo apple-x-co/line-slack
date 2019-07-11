@@ -3,14 +3,12 @@
 namespace Slack\MessageBuilder;
 
 
-use Slack\MessageBuilder\Block\BlockInterface;
-
-class MessageBlock implements BlockInterface, MessageBuilderInterface
+class MessageBlock implements  MessageBuilderInterface
 {
     private $blocks = [];
 
     /**
-     * @param BlockInterface $block
+     * @param MessageBuilderInterface $block
      *
      * @return $this
      */
