@@ -28,8 +28,6 @@ abstract class AbstractChatMessage
      */
     protected function _post($url, $data, $token = null)
     {
-        error_log(print_r($data, true));
-
         $headers = ['Content-Type: application/json; charset=utf-8'];
         if ($token !== null) {
             $headers[] = 'Authorization: Bearer ' . $token;
