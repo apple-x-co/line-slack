@@ -60,7 +60,10 @@ foreach ($events as $event) {
         );
         $postResult = $chatPostMessage->post(
             new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
-            new \Slack\ChatOptions(['thread_ts' => $parent_ts])
+            new \Slack\ChatOptions([
+                'thread_ts' => $parent_ts,
+                'reply_broadcast' => $parent_ts === null ? false : true
+            ])
         );
         if ( ! $postResult->isOk()) {
             error_log($postResult->error());

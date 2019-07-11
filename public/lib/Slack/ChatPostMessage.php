@@ -64,9 +64,7 @@ class ChatPostMessage extends AbstractChatMessage
                 'channel'   => $this->channel,
                 'as_user'   => $this->as_user
             ];
-            if ($options->get('thread_ts') !== null) {
-                $array = array_merge($array, ['thread_ts' => $options->get('thread_ts')]);
-            }
+            $array = array_merge($array, $options->getArray());
             return $this->_post(
                 $this->url,
                 array_merge($array, $data->build()),

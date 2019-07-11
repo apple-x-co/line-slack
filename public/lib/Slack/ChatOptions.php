@@ -23,4 +23,12 @@ class ChatOptions
     {
         return isset($this->options[$key]) ? $this->options[$key] : null;
     }
+
+    /**
+     * @return array
+     */
+    public function getArray()
+    {
+        return $this->options;
+    }
 }
