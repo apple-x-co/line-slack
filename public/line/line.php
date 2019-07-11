@@ -19,13 +19,41 @@ foreach ($events as $event) {
     if ($event instanceof \LINE\LINEBot\Event\LeaveEvent ||
         $event instanceof \LINE\LINEBot\Event\UnfollowEvent) {
         // todo: remove cache
+
+        $texts = [
+            '*LINEのお友達が一人減りました*',
+            '送信者： `' . $event->getEventSourceId() . '`',
+        ];
+        $chatPostMessage = new \Slack\ChatPostMessage(
+            getenv('SLACK_CHANNEL'),
+            getenv('SLACK_BOT_OAUTH_TOKEN')
+        );
+        $postResult = $chatPostMessage->post(
+            new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
+            new \Slack\ChatOptions()
+        );
+
         continue;
     }
     if ($event instanceof \LINE\LINEBot\Event\JoinEvent ||
         $event instanceof \LINE\LINEBot\Event\FollowEvent) {
         $response = $bot->replyMessage(
-            $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('Hi!!')
+            $event->getReplyToken(), new \LINE\LINEBot\MessageBuilder\TextMessageBuilder('Thank you follow!!')
         );
+
+        $texts = [
+            '*LINEのお友達が一人増えました*',
+            '送信者： `' . $event->getEventSourceId() . '`',
+        ];
+        $chatPostMessage = new \Slack\ChatPostMessage(
+            getenv('SLACK_CHANNEL'),
+            getenv('SLACK_BOT_OAUTH_TOKEN')
+        );
+        $postResult = $chatPostMessage->post(
+            new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
+            new \Slack\ChatOptions()
+        );
+
         continue;
     }
 
