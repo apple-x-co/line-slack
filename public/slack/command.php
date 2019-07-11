@@ -25,12 +25,14 @@ $action_map = [
     'message'    => 'sendLineMessage'
 ];
 
-if ( ! array_key_exists($command->getAction(), $action_map)) {
+$action = strtolower($command->getAction());
+
+if ( ! array_key_exists($action, $action_map)) {
     echo 'command refused.';
     exit(1);
 }
 
-$function = $action_map[$command->getAction()];
+$function = $action_map[$action];
 if ( ! function_exists($function)) {
     echo 'unknown command action.';
     exit(1);
