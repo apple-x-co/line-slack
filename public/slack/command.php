@@ -149,9 +149,12 @@ function sendLineMessage($result, $argv)
     }
     $profile = $response->getJSONDecodedBody();
     $texts = [
-        (isset($profile['displayName']) ? $profile['displayName'] : '') . '（ `' . $line_id . '` ）さんにLINEメッセージを送信しました。',
+        '*LINEメッセージを送信しました*',
+        '送信者：' . $result->getUserName(),
+        '宛先：' . (isset($profile['displayName']) ? $profile['displayName'] : '') . '（ `' . $line_id . '` ）さん',
         '',
-        '>' . $message
+        '内容：',
+        '>' . str_replace("\n", "\n>", $message)
     ];
 
     $chatPostMessage = new \Slack\ChatPostMessage(

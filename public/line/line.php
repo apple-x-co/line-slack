@@ -46,11 +46,12 @@ foreach ($events as $event) {
         }
 
         $texts = [
-            'LINEより ' . (isset($profile['displayName']) ? $profile['displayName'] : '') . '（ `' . $line_id . '` ）さんからの問い合わせです。',
+            '*LINEメッセージを受信しました*',
+            '送信者：' . (isset($profile['displayName']) ? $profile['displayName'] : '') . '（ `' . $line_id . '` ）さん',
             //isset($profile['pictureUrl']) ? $profile['pictureUrl'] : '',
             '',
-            $event->getText(),
-            '',
+            '内容：',
+            '>' . str_replace("\n", "\n>", $event->getText())
         ];
 
         $chatPostMessage = new \Slack\ChatPostMessage(
