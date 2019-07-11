@@ -7,7 +7,7 @@ namespace Slack;
 class PostResult
 {
     /** @var array */
-    private $data;
+    private $data = [];
 
     /**
      * PostResult constructor.
@@ -30,7 +30,13 @@ class PostResult
         // 	}
         // }
 
-        $this->data = @json_decode($text, true);
+        if ($text === 'ok') {
+            $this->data = ['ok' => true];
+        } else if ($text === 'ng') {
+            $this->data = ['ok' => false];
+        } else {
+            $this->data = @json_decode($text, true);
+        }
     }
 
     /**

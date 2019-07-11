@@ -36,8 +36,7 @@ if ( ! function_exists($function)) {
     exit(1);
 }
 
-$function($result, $command->getArguments());
-echo 'command accepted.';
+echo $function($result, $command->getArguments());
 
 /**
  * @param \Slack\CommandResult $result
@@ -94,6 +93,13 @@ function getLineStatistics($result, $argv)
         new \Slack\MessageBuilder\MessageText(implode("\n", $texts)),
         new \Slack\ChatOptions()
     );
+
+    if ( ! $postResult->isOk()) {
+        error_log($postResult->error());
+        return "Slackにメッセージを投稿中にエラーが発生しました。\n" . $postResult->error();
+    }
+
+    return 'command accepted.';
 }
 
 /**
@@ -108,7 +114,8 @@ function getLineProfile($result, $argv)
     $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => getenv('LINE_CHANNEL_SECRET')]);
     $response = $bot->getProfile($line_id);
     if ( ! $response->isSucceeded()) {
-        return;
+        error_log($response->getRawBody());
+        return "LINEプロフィール取得中にエラーが発生しました。\n" . $response->getRawBody();
     }
 
     $profile = $response->getJSONDecodedBody();
@@ -147,7 +154,10 @@ function getLineProfile($result, $argv)
 
     if ( ! $postResult->isOk()) {
         error_log($postResult->error());
+        return "Slackにメッセージを投稿中にエラーが発生しました。\n" . $postResult->error();
     }
+
+    return 'command accepted.';
 }
 
 /**
@@ -161,14 +171,19 @@ function sendLineMessage($result, $argv)
     $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(getenv('LINE_ACCESS_TOKEN'));
     $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => getenv('LINE_CHANNEL_SECRET')]);
 
-    $bot->pushMessage(
+    $response = $bot->pushMessage(
         $line_id,
         new \LINE\LINEBot\MessageBuilder\TextMessageBuilder($message)
     );
+    if ( ! $response->isSucceeded()) {
+        error_log($response->getRawBody());
+        return "LINEメッセージ送信中にエラーが発生しました。\n" . $response->getRawBody();
+    }
 
     $response = $bot->getProfile($line_id);
     if ( ! $response->isSucceeded()) {
-        return;
+        error_log($response->getRawBody());
+        return "LINEプロフィール取得中にエラーが発生しました。\n" . $response->getRawBody();
     }
     $profile = $response->getJSONDecodedBody();
     $texts = [
@@ -201,6 +216,8 @@ function sendLineMessage($result, $argv)
     if ($slack_cache === null) {
         write_cache($slack_cache_file_path, ['line_id' => $line_id]);
     }
+
+    return 'command accepted.';
 }
 
 function get_cache_file_path($file_name)

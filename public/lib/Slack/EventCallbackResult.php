@@ -147,7 +147,7 @@ class EventCallbackResult
         }
 
         $match = null;
-        preg_match('/\A\<\@\w+?\> (.+)/', $text, $match);
+        preg_match('/\A\<\@\w+?\> ([\s\S]*)/', $text, $match);
         if (is_array($match)) {
             return $match[1];
         }
