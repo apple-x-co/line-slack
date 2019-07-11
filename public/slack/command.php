@@ -168,7 +168,8 @@ function getLineProfile($result, $argv)
  */
 function sendLineMessage($result, $argv)
 {
-    list($line_id, $message) = $argv;
+    $line_id = array_shift($argv);
+    $message = implode(' ', $argv);
 
     $httpClient = new \LINE\LINEBot\HTTPClient\CurlHTTPClient(getenv('LINE_ACCESS_TOKEN'));
     $bot = new \LINE\LINEBot($httpClient, ['channelSecret' => getenv('LINE_CHANNEL_SECRET')]);
